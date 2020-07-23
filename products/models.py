@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Categories(models.Model):
+    """Модель категорий"""
     name = models.CharField(max_length=128, verbose_name='Название')
     is_active = models.BooleanField(default=True, verbose_name='Активная категория')
 
@@ -14,6 +15,7 @@ class Categories(models.Model):
 
 
 class Products(models.Model):
+    """Модель товаров"""
     name = models.CharField(max_length=128, verbose_name='Наименование товара')
     category = models.ForeignKey(Categories, on_delete=models.CASCADE,
                                  verbose_name='Категория')
@@ -38,6 +40,7 @@ def directory_path(instance, filename):
 
 
 class ProductsImage(models.Model):
+    """Изображения к товару"""
     product = models.ForeignKey(Products, on_delete=models.SET_NULL,
                                 verbose_name='Продукт',
                                 null=True)
