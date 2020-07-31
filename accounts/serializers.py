@@ -52,14 +52,12 @@ class ProviderProfileSerializers(serializers.ModelSerializer):
         model = ProviderProfile
         exclude = ('id',)
 
+
 class UserPasswordChangeSerializers(serializers.Serializer):
     old_password = serializers.CharField(required=True, max_length=50)
     new_password = serializers.CharField(required=True, max_length=50)
     new_password_confirm = serializers.CharField(required=True, max_length=50)
 
-
     def validate_new_password(self, value):
         password_validation.validate_password(value)
         return value
-
-

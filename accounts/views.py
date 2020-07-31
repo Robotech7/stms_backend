@@ -3,14 +3,16 @@ from rest_framework import permissions, serializers, status
 from rest_framework.generics import (CreateAPIView,
                                      RetrieveAPIView,
                                      get_object_or_404,
-                                     RetrieveUpdateAPIView,
-                                     UpdateAPIView)
+                                     RetrieveUpdateAPIView)
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import ProviderProfile
 from .permissions import IsProvider
-from .serializers import UserCreateSerializers, UserProfileSerializers, ProviderProfileSerializers, UserPasswordChangeSerializers
+from .serializers import UserCreateSerializers, UserProfileSerializers, ProviderProfileSerializers, \
+    UserPasswordChangeSerializers
 
 
 class UserCreateView(CreateAPIView):
@@ -40,9 +42,10 @@ class ProviderProfileView(RetrieveAPIView):
         obj = get_object_or_404(self.queryset, user=self.request.user.id)
         return obj
 
+
 class UserPasswordChangeView(APIView):
     """Эндпоинт смены пароля"""
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -66,3 +69,14 @@ class UserPasswordChangeView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class MyJwtTokenView(TokenObtainPairView):
+    """Выдача JWT токена"""
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+        serializer.validated_data.pop('refresh', None)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
