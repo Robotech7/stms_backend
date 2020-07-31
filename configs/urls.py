@@ -11,6 +11,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', MyJwtTokenView.as_view(), name='token_obtain_pair'),
     path('api/accounts/', include('accounts.urls')),
+    path('api/products/', include('products.urls')),
 ]
 
 urlpatterns += swagger_doc
