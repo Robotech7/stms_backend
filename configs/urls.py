@@ -12,9 +12,12 @@ urlpatterns = [
     path('api/token/', MyJwtTokenView.as_view(), name='token_obtain_pair'),
     path('api/accounts/', include('accounts.urls')),
     path('api/products/', include('products.urls')),
+    path('api/orders/', include('orders.urls')),
+    path('api/deliveries/', include('deliveries.urls')),
 ]
 
 urlpatterns += swagger_doc
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

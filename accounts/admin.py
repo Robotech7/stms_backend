@@ -5,4 +5,6 @@ from accounts.models import ProviderProfile
 
 @admin.register(ProviderProfile)
 class ProviderProfileAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user', 'provider_name', 'provider_phone')
+
+admin.site.site_header = 'STMS'

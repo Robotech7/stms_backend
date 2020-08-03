@@ -13,7 +13,7 @@ class ProductsView(viewsets.ReadOnlyModelViewSet):
 class CategoryView(viewsets.ReadOnlyModelViewSet):
     """Эндпоинт на получение списка категорий и товаров этой категории"""
 
-    queryset = Categories.objects.filter(is_active=True)
+    queryset = Categories.objects.filter(is_active=True).select_related()
     permission_classes = (permissions.AllowAny, )
 
     def get_serializer_class(self):

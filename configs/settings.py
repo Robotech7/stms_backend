@@ -30,6 +30,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'accounts',
     'corsheaders',
+    'orders',
+    'deliveries',
 ]
 
 MIDDLEWARE = [

@@ -10,7 +10,7 @@ class ProductsImageSerializer(serializers.ModelSerializer):
 
 class ProductsSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField('name', read_only=True)
-    products_images = ProductsImageSerializer(many=True)
+    productsimage_set = ProductsImageSerializer(many=True)
 
     class Meta:
         model = Products

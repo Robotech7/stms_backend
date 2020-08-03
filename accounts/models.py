@@ -11,6 +11,8 @@ class ProviderProfile(models.Model):
     provider_name = models.CharField(max_length=250, verbose_name='Наименование компании',
                                      null=True, blank=True)
     provider_email = models.EmailField(verbose_name='Email адресс компании', null=True, blank=True)
+    provider_address = models.CharField(max_length=250, verbose_name='Адрес компании',
+                                        null=True, blank=True)
 
     def __str__(self):
         return self.user.username

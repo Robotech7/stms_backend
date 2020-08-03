@@ -33,7 +33,8 @@ class UserRetrieveView(RetrieveUpdateAPIView):
 
 
 class ProviderProfileView(RetrieveAPIView):
-    """Профиль поставщика"""
+    """Профиль поставщика
+    Права доступа: авторизованный, пользователь в группе поставщиков"""
     permission_classes = (IsProvider,)
     serializer_class = ProviderProfileSerializers
     queryset = ProviderProfile.objects.all()
