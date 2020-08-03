@@ -13,6 +13,7 @@ STATUS = (
 
 
 class Deliveries(models.Model):
+    """Модель поставок"""
     provider = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE, verbose_name='Поставщик')
     status = models.IntegerField(choices=STATUS, default=1, verbose_name='Статус')
     total_amount = models.PositiveIntegerField(verbose_name='Количество позиций', null=True,
@@ -40,6 +41,7 @@ class Deliveries(models.Model):
 
 
 class ProductsInDeliveries(models.Model):
+    """Модель позиций внутри поставки"""
     delivery = models.ForeignKey(Deliveries, on_delete=models.CASCADE, verbose_name='Поставка')
     product = models.ForeignKey(Products, on_delete=models.SET_NULL, verbose_name='Товар', null=True)
     amount = models.PositiveIntegerField(verbose_name='Количество')

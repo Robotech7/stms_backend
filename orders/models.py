@@ -21,6 +21,7 @@ STATUS = (
 
 
 class Orders(models.Model):
+    """Модель заказов"""
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
                              verbose_name='Пользователь')
     client_phone = models.CharField(max_length=18, validators=[phone_regex], verbose_name='Номер телефона')
@@ -41,6 +42,7 @@ class Orders(models.Model):
 
 
 class ProductsInOrder(models.Model):
+    """Модель позиций к заказу"""
     order = models.ForeignKey(Orders, on_delete=models.CASCADE, null=True, verbose_name='Заказ')
     product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True, verbose_name='Продукт')
     price_for_one = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Цена за единицу')
@@ -59,6 +61,7 @@ class ProductsInOrder(models.Model):
         verbose_name = 'Товар'
 
 
+"""Сигнал для подсчета суммы стоимости в заказе, после сохранения позиций"""
 @receiver(post_save, sender=ProductsInOrder)
 def init_price(instance, **kwargs):
     order = instance.order
