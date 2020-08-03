@@ -33,6 +33,11 @@ class Orders(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Создано')
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name='Обновлено')
 
+    def save(self, *args, **kwargs):
+        if self.status == 3:
+            pass
+        return super().save()
+
     def __str__(self):
         return f'{self.user.username}/{self.client_name}-{self.client_surname}'
 
@@ -61,7 +66,7 @@ class ProductsInOrder(models.Model):
         verbose_name = 'Товар'
 
 
-"""Сигнал для подсчета суммы стоимости в заказе, после сохранения позиций"""
+# Сигнал для подсчета суммы стоимости в заказе, после сохранения позиций
 @receiver(post_save, sender=ProductsInOrder)
 def init_price(instance, **kwargs):
     order = instance.order
