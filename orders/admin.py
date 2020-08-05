@@ -12,7 +12,8 @@ class ProductsInOrderInline(admin.TabularInline):
 
 class QrCodesOrderVerifyAdmin(admin.TabularInline):
     model = QrCodesOrderVerify
-    fields = ('qr',)
+    fields = ('qr_tag', 'qr')
+    readonly_fields = ('qr_tag', 'qr')
     extra = 0
 
 
@@ -24,3 +25,4 @@ class OrdersAdmin(admin.ModelAdmin):
     ordering = ('created',)
     list_filter = ('status', 'created', 'updated')
     search_fields = ('client_name', 'client_email')
+    list_select_related = True

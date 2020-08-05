@@ -16,6 +16,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Не знаю как динамически получать доменное имя на уровне модели
+# для вставки в QR код, Site настраивать не вижу необходимости
+URL = 'http://pavelm.pythonanywhere.com/'
+
 # Application definition
 
 INSTALLED_APPS = [

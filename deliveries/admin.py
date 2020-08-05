@@ -16,3 +16,4 @@ class DeliveriesAdmin(admin.ModelAdmin):
     ordering = ('-created',)
     list_filter = ('status', 'created', 'updated')
     readonly_fields = ('total_amount',)
+    list_select_related = True

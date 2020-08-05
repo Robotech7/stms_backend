@@ -1,11 +1,11 @@
 import qrcode
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.files import File
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.safestring import mark_safe
 
 from products.models import Products
 
@@ -41,18 +41,16 @@ class Orders(models.Model):
             # Кажется накостылял жестко, надо разбираться с более лучшим вариантом
             obj = QrCodesOrderVerify()
             obj.order = self
-            filename = f'qr-{self.id}.png'
-            obj.qr.save(filename, self.qr_generate(), save=False)
+            obj.qr = self.qr_generate()
             obj.save()
         return super().save()
 
     def qr_generate(self):
-        img = qrcode.make(''.join(['http://', 'localhost:8000/', 'api/orders/verify/', str(self.id)]))
+        img = qrcode.make(''.join([settings.URL, 'api/orders/verify/', str(self.id)]))
         filename = f'qr-{self.id}.png'
-        img.save(settings.MEDIA_ROOT + filename)
-        reopen = open(settings.MEDIA_ROOT + filename, 'rb')
-        django_file = File(reopen)
-        return django_file
+        img.save(settings.MEDIA_ROOT + '/qr_codes/' + filename)
+        img_path = '/qr_codes/' + filename
+        return img_path
 
     def __str__(self):
         return f'{self.user.username}/{self.client_name}-{self.client_surname}'
@@ -87,6 +85,11 @@ class QrCodesOrderVerify(models.Model):
     order = models.OneToOneField(Orders, on_delete=models.CASCADE, verbose_name='Заказ')
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Создано')
     qr = models.ImageField(upload_to='qr_codes/', verbose_name='QR код')
+
+    def qr_tag(self):
+        return mark_safe('<img src="%s" width="100" height="100" />' % self.qr.url)
+
+    qr_tag.short_description = 'QR код'
 
     def __str__(self):
         return f'{self.order}'

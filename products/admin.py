@@ -6,6 +6,8 @@ from .models import Products, Categories, ProductsImage
 class ProductsImageInline(admin.TabularInline):
     model = ProductsImage
     extra = 0
+    fields = ('image_tag', 'image')
+    readonly_fields = ('image_tag',)
 
 
 @admin.register(Products)

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.safestring import mark_safe
 
 
 class Categories(models.Model):
@@ -46,6 +47,11 @@ class ProductsImage(models.Model):
                                 null=True)
     image = models.ImageField(upload_to=directory_path, verbose_name='Фото')
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Добавлено')
+
+    def image_tag(self):
+        return mark_safe('<img src="%s" width="100" height="100" />' % self.image.url)
+
+    image_tag.short_description = 'Фото товара'
 
     def __str__(self):
         return f'{self.product.name}-{self.id}'
