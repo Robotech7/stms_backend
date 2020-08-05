@@ -1,4 +1,7 @@
+import qrcode
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.files import File
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import post_save
@@ -34,9 +37,22 @@ class Orders(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name='Обновлено')
 
     def save(self, *args, **kwargs):
-        if self.status == 3:
-            pass
+        if self.status == 3 and not QrCodesOrderVerify.objects.filter(order=self.id).exists():
+            # Кажется накостылял жестко, надо разбираться с более лучшим вариантом
+            obj = QrCodesOrderVerify()
+            obj.order = self
+            filename = f'qr-{self.id}.png'
+            obj.qr.save(filename, self.qr_generate(), save=False)
+            obj.save()
         return super().save()
+
+    def qr_generate(self):
+        img = qrcode.make(''.join(['http://', 'localhost:8000/', 'api/orders/verify/', str(self.id)]))
+        filename = f'qr-{self.id}.png'
+        img.save(settings.MEDIA_ROOT + filename)
+        reopen = open(settings.MEDIA_ROOT + filename, 'rb')
+        django_file = File(reopen)
+        return django_file
 
     def __str__(self):
         return f'{self.user.username}/{self.client_name}-{self.client_surname}'
@@ -64,6 +80,20 @@ class ProductsInOrder(models.Model):
     class Meta:
         verbose_name_plural = 'Товары'
         verbose_name = 'Товар'
+
+
+class QrCodesOrderVerify(models.Model):
+    """Модель хранящая QR коды, для подтверждения получения заказа"""
+    order = models.OneToOneField(Orders, on_delete=models.CASCADE, verbose_name='Заказ')
+    created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Создано')
+    qr = models.ImageField(upload_to='qr_codes/', verbose_name='QR код')
+
+    def __str__(self):
+        return f'{self.order}'
+
+    class Meta:
+        verbose_name_plural = 'QR коды подтверждения'
+        verbose_name = 'QR код подтверждения'
 
 
 # Сигнал для подсчета суммы стоимости в заказе, после сохранения позиций
