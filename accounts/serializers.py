@@ -1,7 +1,6 @@
 from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from rest_framework import validators
 
 from .models import ProviderProfile
 
@@ -26,10 +25,14 @@ class UserCreateSerializers(serializers.ModelSerializer):
         password_validation.validate_password(value, self.instance)
         return value
 
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError('Пользователь с таким email адресом существует')
+        return value
+
     class Meta:
         model = User
         fields = ('username', 'email', 'password', 'first_name', 'last_name')
-        validators = [validators.UniqueTogetherValidator(User.objects.all(), fields=['email', ])]
         extra_kwargs = {'first_name': {'required': True, 'trim_whitespace': True},
                         'last_name': {'required': True, 'trim_whitespace': True},
                         'email': {'required': True, 'trim_whitespace': True}}
