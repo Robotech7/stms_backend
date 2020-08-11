@@ -16,7 +16,7 @@ class OrdersView(viewsets.ModelViewSet):
     serializer_class = OrdersSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     ordering_fields = ['total_price', 'status', 'updated']
-    search_fields = ['client_name', 'client_email']
+    search_fields = ['client_name', 'client_email', 'user__username']
 
     def get_queryset(self):
         if self.request.user.is_staff:

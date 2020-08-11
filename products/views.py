@@ -12,7 +12,7 @@ class ProductsView(viewsets.ModelViewSet):
     serializer_class = ProductsSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     ordering_fields = ['price', 'in_storage']
-    search_fields = ['name', 'category', 'bar_code']
+    search_fields = ['name', 'category__name', 'bar_code']
 
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -22,7 +22,6 @@ class ProductsView(viewsets.ModelViewSet):
         return queryset
 
     def get_permissions(self):
-        print(self.action)
         if self.action == 'update' or self.action == 'destroy' or self.action == 'create':
             permissions_classes = (permissions.IsAdminUser,)
         else:
