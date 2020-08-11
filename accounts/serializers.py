@@ -1,5 +1,4 @@
-from django.contrib.auth import password_validation
-from django.contrib.auth.models import User
+from django.contrib.auth import password_validation, get_user_model
 from rest_framework import serializers
 
 from .models import ProviderProfile
@@ -13,10 +12,11 @@ class UserCreateSerializers(serializers.ModelSerializer):
         email = validated_data['email']
         first_name = validated_data['first_name']
         last_name = validated_data['last_name']
-        user = User(username=username,
-                    email=email,
-                    first_name=first_name,
-                    last_name=last_name)
+        user_model = get_user_model()
+        user = user_model(username=username,
+                          email=email,
+                          first_name=first_name,
+                          last_name=last_name)
         user.set_password(validated_data['password'])
         user.save()
         return user
@@ -26,12 +26,13 @@ class UserCreateSerializers(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
-        if User.objects.filter(email__iexact=value).exists():
+        user_model = get_user_model()
+        if user_model.objects.filter(email__iexact=value).exists():
             raise serializers.ValidationError('Пользователь с таким email адресом существует')
         return value
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('username', 'email', 'password', 'first_name', 'last_name')
         extra_kwargs = {'first_name': {'required': True, 'trim_whitespace': True},
                         'last_name': {'required': True, 'trim_whitespace': True},
@@ -42,8 +43,8 @@ class UserProfileSerializers(serializers.ModelSerializer):
     groups = serializers.SlugRelatedField(many=True, slug_field='name', read_only=True)
 
     class Meta:
-        model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'groups', 'last_login')
+        model = get_user_model()
+        fields = ('username', 'email', 'first_name', 'last_name', 'groups', 'last_login', 'avatar')
         read_only_fields = ['username', 'groups', 'last_login']
 
 

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import Products, Categories, ProductsImage
 
 
@@ -9,7 +10,6 @@ class ProductsImageSerializer(serializers.ModelSerializer):
 
 
 class ProductsSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField('name', read_only=True)
     productsimage_set = ProductsImageSerializer(many=True)
 
     class Meta:

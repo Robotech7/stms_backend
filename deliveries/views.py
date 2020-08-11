@@ -6,12 +6,26 @@ from .models import Deliveries
 from .serializers import DeliveriesSerializer
 
 
-class DeliveriesView(viewsets.ReadOnlyModelViewSet):
-    """Эндпоинт на получение списка поставок и одного
-    Права доступа: авторизованный, пользователь в группе поставщиков"""
+class DeliveriesView(viewsets.ModelViewSet):
+    """Эндпоинт на получение списка поставок и одного для поставщика
+    Права доступа: авторизованный, пользователь в группе поставщиков
+    Кладовщик может создавать, удалять и обновлять"""
     permission_classes = (permissions.IsAuthenticated, IsProvider)
     serializer_class = DeliveriesSerializer
 
     def get_queryset(self):
-        queryset = Deliveries.objects.filter(provider__user=self.request.user.id)
-        return queryset
+        if self.request.user.is_staff:
+            queryset = Deliveries.objects.all()
+            return queryset
+        else:
+            queryset = Deliveries.objects.filter(provider__user=self.request.user.id)
+            return queryset
+
+    def get_permissions(self):
+        if self.action == 'update' or self.action == 'destroy' or self.action == 'create':
+            permissions_classes = (permissions.IsAdminUser,)
+        elif self.request.user.is_staff:
+            permissions_classes = (permissions.IsAdminUser,)
+        else:
+            permissions_classes = self.permission_classes
+        return [permission() for permission in permissions_classes]

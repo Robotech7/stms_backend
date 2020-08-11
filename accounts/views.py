@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import permissions, serializers, status
 from rest_framework.generics import (CreateAPIView,
                                      RetrieveAPIView,
@@ -25,7 +25,8 @@ class UserRetrieveView(RetrieveUpdateAPIView):
     """Профиль пользователя"""
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserProfileSerializers
-    queryset = User.objects.all()
+    user_model = get_user_model()
+    queryset = user_model.objects.all()
 
     def get_object(self):
         obj = get_object_or_404(self.queryset, id=self.request.user.id)

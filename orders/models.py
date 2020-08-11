@@ -15,11 +15,11 @@ phone_regex = RegexValidator(
 )
 
 STATUS = (
-    (1, 'Новый'),
-    (2, 'Формируется'),
-    (3, 'Готов к выдаче'),
-    (4, 'Получено'),
-    (5, 'Ошибка, обратитесь в службу поддержки')
+    ('new', 'Новый'),
+    ('form', 'Формируется'),
+    ('ready', 'Готов к выдаче'),
+    ('received', 'Получено'),
+    ('error', 'Ошибка, обратитесь в службу поддержки')
 )
 
 
@@ -32,12 +32,12 @@ class Orders(models.Model):
     client_surname = models.CharField(max_length=128, verbose_name='Фамилия клиента')
     client_email = models.EmailField(max_length=128, verbose_name='E-mail клиента')
     total_price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Сумма', null=True)
-    status = models.IntegerField(choices=STATUS, default=1, verbose_name='Статус заказа')
+    status = models.CharField(choices=STATUS, max_length=255, default='new', verbose_name='Статус заказа')
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Создано')
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name='Обновлено')
 
     def save(self, *args, **kwargs):
-        if self.status == 3 and not QrCodesOrderVerify.objects.filter(order=self.id).exists():
+        if self.status == 'ready' and not QrCodesOrderVerify.objects.filter(order=self.id).exists():
             # Кажется накостылял жестко, надо разбираться с более лучшим вариантом
             obj = QrCodesOrderVerify()
             obj.order = self

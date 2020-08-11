@@ -34,9 +34,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'accounts',
     'products',
     'drf_yasg',
-    'accounts',
     'corsheaders',
     'orders',
     'deliveries',
@@ -156,3 +156,5 @@ SIMPLE_JWT = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+AUTH_USER_MODEL = 'accounts.User'

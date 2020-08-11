@@ -7,15 +7,15 @@ from accounts.models import ProviderProfile
 from products.models import Products
 
 STATUS = (
-    (1, 'Новый'),
-    (2, 'Доставлено'),
+    ('new', 'Новый'),
+    ('received', 'Получено'),
 )
 
 
 class Deliveries(models.Model):
     """Модель поставок"""
     provider = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE, verbose_name='Поставщик')
-    status = models.IntegerField(choices=STATUS, default=1, verbose_name='Статус')
+    status = models.CharField(choices=STATUS, max_length=255, default='new', verbose_name='Статус')
     total_amount = models.PositiveIntegerField(verbose_name='Количество позиций', null=True,
                                                blank=True)
     total_price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Сумма', null=True,
@@ -27,7 +27,7 @@ class Deliveries(models.Model):
         return self.provider.provider_name
 
     def save(self, *args, **kwargs):
-        if self.status == 2:
+        if self.status == 'received':
             all_products = ProductsInDeliveries.objects.filter(delivery=self.id)
             for product in all_products:
                 obj = get_object_or_404(Products, id=product.product_id)

@@ -8,21 +8,33 @@ from .serializers import OrdersSerializer
 
 
 class OrdersView(viewsets.ModelViewSet):
-    """Вьюсет для заказов, на создание, чтение и удаление"""
+    """Вьюсет для заказов, на создание, чтение и удаление.
+    Заказы только авторизованного пользователя
+    Администратор(кладовщик) видит все
+    Обновлять может только кладовщик"""
     permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = OrdersSerializer
 
     def get_queryset(self):
-        if self.request.user:
+        if self.request.user.is_staff:
+            queryset = Orders.objects.all()
+            return queryset
+        else:
             queryset = Orders.objects.filter(user__id=self.request.user.id)
             return queryset
 
     def perform_destroy(self, instance):
-        if instance.user == self.request.user:
-            instance.delete()
+        instance.delete()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def get_permissions(self):
+        if self.action == 'update':
+            permissions_classes = (permissions.IsAdminUser,)
+        else:
+            permissions_classes = self.permission_classes
+        return [permission() for permission in permissions_classes]
 
 
 class OrderVerifyView(APIView):
