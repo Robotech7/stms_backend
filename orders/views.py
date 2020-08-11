@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -14,6 +14,9 @@ class OrdersView(viewsets.ModelViewSet):
     Обновлять может только кладовщик"""
     permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = OrdersSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    ordering_fields = ['total_price', 'status', 'updated']
+    search_fields = ['client_name', 'client_email']
 
     def get_queryset(self):
         if self.request.user.is_staff:

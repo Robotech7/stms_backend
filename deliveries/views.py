@@ -1,4 +1,4 @@
-from rest_framework import permissions
+from rest_framework import permissions, filters
 from rest_framework import viewsets
 
 from accounts.permissions import IsProvider
@@ -12,6 +12,9 @@ class DeliveriesView(viewsets.ModelViewSet):
     Кладовщик может создавать, удалять и обновлять"""
     permission_classes = (permissions.IsAuthenticated, IsProvider)
     serializer_class = DeliveriesSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    ordering_fields = ['total_price', 'updated', 'created', 'status']
+    search_fields = ['provider__provider_name', ]
 
     def get_queryset(self):
         if self.request.user.is_staff:

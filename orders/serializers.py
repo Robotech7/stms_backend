@@ -40,10 +40,8 @@ class OrdersSerializer(serializers.ModelSerializer):
         instance.save()
 
         products = validated_data.get('productsinorder_set')
-        print(products)
         if products is not None:
             for product in products:
-                print(product)
                 product_id = product.get('id', None)
                 if product_id:
                     product_item = ProductsInOrder.objects.get(id=product_id, order=instance)

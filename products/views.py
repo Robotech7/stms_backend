@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, filters
 
 from .models import Products, Categories
 from .serializers import ProductsSerializer, CategorySerializer, CategoryProductsSerializer
@@ -10,6 +10,9 @@ class ProductsView(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = Products.objects.filter(is_active=True)
     serializer_class = ProductsSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    ordering_fields = ['price', 'in_storage']
+    search_fields = ['name', 'category', 'bar_code']
 
     def get_queryset(self):
         if self.request.user.is_staff:
