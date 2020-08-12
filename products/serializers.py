@@ -13,6 +13,7 @@ class ProductsImageSerializer(serializers.ModelSerializer):
 
 class ProductsSerializer(serializers.ModelSerializer):
     productsimage_set = ProductsImageSerializer(many=True)
+    category = serializers.SlugRelatedField(slug_field='name', queryset=Categories.objects.all())
 
     def create(self, validated_data):
         products_image = validated_data.pop('productsimage_set')
