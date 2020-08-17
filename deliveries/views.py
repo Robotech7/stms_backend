@@ -1,5 +1,6 @@
-from rest_framework import permissions, filters
+from rest_framework import permissions
 from rest_framework import viewsets
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from accounts.permissions import IsProvider
 from .models import Deliveries
@@ -12,20 +13,20 @@ class DeliveriesView(viewsets.ModelViewSet):
     Кладовщик может создавать, удалять и обновлять"""
     permission_classes = (permissions.IsAuthenticated, IsProvider)
     serializer_class = DeliveriesSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [SearchFilter, OrderingFilter]
     ordering_fields = ['total_price', 'updated', 'created', 'status']
     search_fields = ['provider__provider_name', ]
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            queryset = Deliveries.objects.all()
-            return queryset
+            queryset = Deliveries.objects.select_related('productsindeliveries_set').all()
         else:
-            queryset = Deliveries.objects.filter(provider__user=self.request.user.id)
-            return queryset
+            queryset = Deliveries.objects.select_related('productsindeliveries_set') \
+                .filter(provider__user=self.request.user.id)
+        return queryset
 
     def get_permissions(self):
-        if self.action == 'update' or self.action == 'destroy' or self.action == 'create':
+        if self.action == any(['update', 'create', 'destroy']):
             permissions_classes = (permissions.IsAdminUser,)
         elif self.request.user.is_staff:
             permissions_classes = (permissions.IsAdminUser,)

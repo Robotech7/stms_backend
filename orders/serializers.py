@@ -32,6 +32,7 @@ class OrdersSerializer(WritableNestedModelSerializer):
     qrcodesorderverify = QrCodesOrderVerifySerializer()
 
     def to_representation(self, instance):
+        # Метод для вывода QR только админу(кладовщику)
         representation = super().to_representation(instance)
         qr = representation.pop('qrcodesorderverify', '')
         if self.context['request'].user.is_staff:

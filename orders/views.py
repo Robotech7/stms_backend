@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, permissions, status, filters
+from rest_framework import viewsets, permissions, status
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -14,7 +15,7 @@ class OrdersView(viewsets.ModelViewSet):
     Обновлять может только кладовщик"""
     permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = OrdersSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [SearchFilter, OrderingFilter]
     ordering_fields = ['total_price', 'status', 'updated']
     search_fields = ['client_name', 'client_email', 'user__username']
 
@@ -23,7 +24,7 @@ class OrdersView(viewsets.ModelViewSet):
             queryset = Orders.objects.all()
             return queryset
         else:
-            queryset = Orders.objects.filter(user__id=self.request.user.id)
+            queryset = Orders.objects.select_related('productsinorder_set').filter(user__id=self.request.user.id)
             return queryset
 
     def perform_destroy(self, instance):
@@ -45,7 +46,7 @@ class OrderVerifyView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk):
-        queryset = Orders.objects.filter(user=request.user.id, status=3)
+        queryset = Orders.objects.filter(user=request.user.id, status='ready')
         if queryset.exists():
             obj = get_object_or_404(queryset, id=pk)
             obj.status = 4

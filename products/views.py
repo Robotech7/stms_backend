@@ -1,4 +1,5 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from .models import Products, Categories
 from .serializers import ProductsSerializer, CategorySerializer, CategoryProductsSerializer
@@ -10,7 +11,7 @@ class ProductsView(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = Products.objects.filter(is_active=True)
     serializer_class = ProductsSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [SearchFilter, OrderingFilter]
     ordering_fields = ['price', 'in_storage']
     search_fields = ['name', 'category__name', 'bar_code']
 
@@ -22,7 +23,7 @@ class ProductsView(viewsets.ModelViewSet):
         return queryset
 
     def get_permissions(self):
-        if self.action == 'update' or self.action == 'destroy' or self.action == 'create':
+        if self.action == any(['update', 'create', 'destroy']):
             permissions_classes = (permissions.IsAdminUser,)
         else:
             permissions_classes = self.permission_classes
@@ -32,7 +33,7 @@ class ProductsView(viewsets.ModelViewSet):
 class CategoryView(viewsets.ReadOnlyModelViewSet):
     """Эндпоинт на получение списка категорий и товаров этой категории"""
 
-    queryset = Categories.objects.filter(is_active=True).select_related()
+    queryset = Categories.objects.select_related('products_set').filter(is_active=True)
     permission_classes = (permissions.AllowAny,)
 
     def get_serializer_class(self):
