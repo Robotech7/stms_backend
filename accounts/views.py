@@ -72,7 +72,7 @@ class UserPasswordChangeView(APIView):
 
 
 class MyJwtTokenView(TokenObtainPairView):
-    """Выдача JWT токена"""
+    """Выдача JWT токена, убрал рефреш токен"""
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
