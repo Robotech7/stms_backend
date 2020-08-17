@@ -1,3 +1,5 @@
+from enum import Enum
+
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -12,10 +14,20 @@ STATUS = (
 )
 
 
+class StatusDeliveries(Enum):
+    new = 'Новый'
+    received = 'Получено'
+
+    @classmethod
+    def choices(cls):
+        return tuple((attr.name, attr.value) for attr in cls)
+
+
 class Deliveries(models.Model):
     """Модель поставок"""
     provider = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE, verbose_name='Поставщик')
-    status = models.CharField(choices=STATUS, max_length=255, default='new', verbose_name='Статус')
+    status = models.CharField(choices=StatusDeliveries.choices(), max_length=255,
+                              default=StatusDeliveries.new, verbose_name='Статус')
     total_amount = models.PositiveIntegerField(verbose_name='Количество позиций', null=True,
                                                blank=True)
     total_price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Сумма', null=True,

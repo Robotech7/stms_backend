@@ -1,3 +1,5 @@
+from enum import Enum
+
 import qrcode
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -23,6 +25,18 @@ STATUS = (
 )
 
 
+class StatusOrders(Enum):
+    new = 'Новый'
+    received = 'Получено'
+    form = 'Формируется'
+    error = 'Ошибка, обратитесь в службу поддержки'
+    ready = 'Готов к выдаче'
+
+    @classmethod
+    def choices(cls):
+        return tuple((attr.name, attr.value) for attr in cls)
+
+
 class Orders(models.Model):
     """Модель заказов"""
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
@@ -32,7 +46,8 @@ class Orders(models.Model):
     client_surname = models.CharField(max_length=128, verbose_name='Фамилия клиента')
     client_email = models.EmailField(max_length=128, verbose_name='E-mail клиента')
     total_price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Сумма', null=True)
-    status = models.CharField(choices=STATUS, max_length=255, default='new', verbose_name='Статус заказа')
+    status = models.CharField(choices=StatusOrders.choices(), max_length=255,
+                              default=StatusOrders.new, verbose_name='Статус заказа')
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Создано')
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name='Обновлено')
 
