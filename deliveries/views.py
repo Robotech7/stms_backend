@@ -19,9 +19,9 @@ class DeliveriesView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            queryset = Deliveries.objects.select_related('productsindeliveries_set').all()
+            queryset = Deliveries.objects.all()
         else:
-            queryset = Deliveries.objects.select_related('productsindeliveries_set') \
+            queryset = Deliveries.objects.prefetch_related('productsindeliveries_set') \
                 .filter(provider__user=self.request.user.id)
         return queryset
 

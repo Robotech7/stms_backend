@@ -21,10 +21,10 @@ class OrdersView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            queryset = Orders.objects.all()
+            queryset = Orders.objects.prefetch_related('productsinorder_set').all()
             return queryset
         else:
-            queryset = Orders.objects.select_related('productsinorder_set').filter(user__id=self.request.user.id)
+            queryset = Orders.objects.prefetch_related('productsinorder_set').filter(user__id=self.request.user.id)
             return queryset
 
     def perform_destroy(self, instance):
