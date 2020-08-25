@@ -4,6 +4,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from orders.telegram_bot import send_notification
 from .models import Orders
 from .serializers import OrdersSerializer
 
@@ -49,9 +50,11 @@ class OrderVerifyView(APIView):
         queryset = Orders.objects.filter(user=request.user.id, status='ready')
         if queryset.exists():
             obj = get_object_or_404(queryset, id=pk)
-            obj.status = 4
+            obj.status = 'received'
             obj.save()
-            serializer = OrdersSerializer(obj)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            send_notification(f'Клиент: {obj.user}-{obj.client_name}:{obj.client_surname}, '
+                              f'забрал заказ под номером ({obj.id}).'
+                              f'Стоимостью {obj.total_price}')
+            return Response({'status': 'ok'}, status=status.HTTP_200_OK, )
         else:
             return Response({'errors': 'Видимо это не ваш заказ'}, status=status.HTTP_400_BAD_REQUEST)

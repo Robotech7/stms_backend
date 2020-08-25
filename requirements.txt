@@ -25,6 +25,7 @@ pycodestyle==2.6.0
 pyflakes==2.2.0
 PyJWT==1.7.1
 pyparsing==2.4.7
+pyTelegramBotAPI==3.7.3
 pytz==2020.1
 qrcode==6.1
 requests==2.24.0
