@@ -9,19 +9,12 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 
+from orders.mail_send_notification import notification_order_ready
 from products.models import Products
 
 phone_regex = RegexValidator(
     regex=r'^\+?1?\d{9,15}$',
     message="Номер телефона имеет формат: +777777777, от 9 до 15 символов"
-)
-
-STATUS = (
-    ('new', 'Новый'),
-    ('form', 'Формируется'),
-    ('ready', 'Готов к выдаче'),
-    ('received', 'Получено'),
-    ('error', 'Ошибка, обратитесь в службу поддержки')
 )
 
 
@@ -53,6 +46,7 @@ class Orders(models.Model):
 
     def save(self, *args, **kwargs):
         if self.status == 'ready' and not QrCodesOrderVerify.objects.filter(order=self.id).exists():
+            notification_order_ready(self)
             # Кажется накостылял жестко, надо разбираться с более лучшим вариантом
             obj = QrCodesOrderVerify()
             obj.order = self

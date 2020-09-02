@@ -8,11 +8,6 @@ from django.shortcuts import get_object_or_404
 from accounts.models import ProviderProfile
 from products.models import Products
 
-STATUS = (
-    ('new', 'Новый'),
-    ('received', 'Получено'),
-)
-
 
 class StatusDeliveries(Enum):
     new = 'Новый'

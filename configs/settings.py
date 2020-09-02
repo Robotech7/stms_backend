@@ -128,7 +128,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
-
+# Настройки выдачи JWT токена
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=365),
     # 'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -156,7 +156,17 @@ SIMPLE_JWT = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
-
+# Кастомная User модель
 AUTH_USER_MODEL = 'accounts.User'
-
+# Апи ключ для телеграм бота
 TELEGRAM_BOT_TOKEN = env('TELEGRAM_BOT_API')
+
+# Настройка SMTP
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = True
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
