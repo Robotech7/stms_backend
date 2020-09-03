@@ -19,10 +19,11 @@ class QrCodesOrderVerifyAdmin(admin.TabularInline):
 
 @admin.register(Orders)
 class OrdersAdmin(admin.ModelAdmin):
-    list_display = ['client_name', 'user', 'status', 'client_email', 'total_price']
+    list_display = ['id', 'client_name', 'user', 'status', 'client_email', 'total_price']
+    list_display_links = ['client_name', ]
     readonly_fields = ['total_price']
     inlines = [ProductsInOrderInline, QrCodesOrderVerifyAdmin]
-    ordering = ('created',)
+    ordering = ('-created',)
     list_filter = ('status', 'created', 'updated')
-    search_fields = ('client_name', 'client_email')
+    search_fields = ('client_name', 'client_email', 'id')
     list_select_related = True

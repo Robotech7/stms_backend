@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 
 from orders.mail_send_notification import notification_order_ready
+from orders.telegram_bot import send_notification
 from products.models import Products
 
 phone_regex = RegexValidator(
@@ -110,7 +111,7 @@ class QrCodesOrderVerify(models.Model):
 
 # Сигнал для подсчета суммы стоимости в заказе, после сохранения позиций
 @receiver(post_save, sender=ProductsInOrder)
-def init_price(instance, **kwargs):
+def init_price(instance, created, **kwargs):
     order = instance.order
     all_products = ProductsInOrder.objects.filter(order=order)
     total_price = 0
@@ -118,3 +119,7 @@ def init_price(instance, **kwargs):
         total_price += item.price_for_one * item.amount
     order.total_price = total_price
     order.save()
+    # Уведомление в телеграм группу о поступившем заказе
+    if created:
+        text = f'Поступил новый заказ, на сумму {total_price}р., от пользователя {order.user.username}'
+        send_notification(text)
