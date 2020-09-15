@@ -41,7 +41,7 @@ class Orders(models.Model):
     client_email = models.EmailField(max_length=128, verbose_name='E-mail клиента')
     total_price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Сумма', null=True)
     status = models.CharField(choices=StatusOrders.choices(), max_length=255,
-                              default=StatusOrders.new, verbose_name='Статус заказа')
+                              default=StatusOrders.new.name, verbose_name='Статус заказа')
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name='Создано')
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name='Обновлено')
 
@@ -78,7 +78,7 @@ class ProductsInOrder(models.Model):
     amount = models.PositiveSmallIntegerField(verbose_name='Количество')
 
     def __str__(self):
-        return f'{self.product.name}'
+        return f'{self.order.user}'
 
     def save(self, *args, **kwargs):
         price_for_one = self.product.price

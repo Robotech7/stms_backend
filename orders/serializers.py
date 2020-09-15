@@ -2,13 +2,13 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from products.models import Products
-from .models import Orders, ProductsInOrder, QrCodesOrderVerify
+from .models import Orders, ProductsInOrder
 
 
-class QrCodesOrderVerifySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = QrCodesOrderVerify
-        fields = ('qr',)
+# class QrCodesOrderVerifySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = QrCodesOrderVerify
+#         fields = ('qr',)
 
 
 class ProductsSerializers(serializers.ModelSerializer):
@@ -29,15 +29,16 @@ class ProductsInOrderSerializers(serializers.ModelSerializer):
 class OrdersSerializer(WritableNestedModelSerializer):
     productsinorder_set = ProductsInOrderSerializers(many=True)
     user = serializers.SlugRelatedField(slug_field='username', read_only=True)
-    qrcodesorderverify = QrCodesOrderVerifySerializer()
+    # qrcodesorderverify = QrCodesOrderVerifySerializer()
+    status = serializers.CharField(source='get_status_display', read_only=True)
 
-    def to_representation(self, instance):
-        # Метод для вывода QR только админу(кладовщику)
-        representation = super().to_representation(instance)
-        qr = representation.pop('qrcodesorderverify', '')
-        if self.context['request'].user.is_staff:
-            representation['qr_codes'] = qr
-        return representation
+    # def to_representation(self, instance):
+    #     # Метод для вывода QR только админу(кладовщику)
+    #     representation = super().to_representation(instance)
+    #     qr = representation.pop('qrcodesorderverify', '')
+    #     if self.context['request'].user.is_staff:
+    #         representation['qr_codes'] = qr
+    #     return representation
 
     # def create(self, validated_data):
     #     products_in_order = validated_data.pop('productsinorder_set')

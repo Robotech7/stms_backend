@@ -26,7 +26,6 @@ class Products(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name='Обновлено')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена, руб')
     in_storage = models.PositiveIntegerField(verbose_name='В наличии')
-    bar_code = models.IntegerField(verbose_name='Артикул', unique=True)
 
     def __str__(self):
         return self.name
