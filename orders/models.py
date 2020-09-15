@@ -74,11 +74,11 @@ class ProductsInOrder(models.Model):
     """Модель позиций к заказу"""
     order = models.ForeignKey(Orders, on_delete=models.CASCADE, null=True, verbose_name='Заказ')
     product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True, verbose_name='Продукт')
-    price_for_one = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Цена за единицу')
+    price_for_one = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Цена за единицу')
     amount = models.PositiveSmallIntegerField(verbose_name='Количество')
 
     def __str__(self):
-        return f'{self.order.user}'
+        return f'{self.order}'
 
     def save(self, *args, **kwargs):
         price_for_one = self.product.price
@@ -119,7 +119,11 @@ def init_price(instance, created, **kwargs):
         total_price += item.price_for_one * item.amount
     order.total_price = total_price
     order.save()
-    # Уведомление в телеграм группу о поступившем заказе
+
+
+# Уведомление в телеграм группу о поступившем заказе
+@receiver(post_save, sender=Orders)
+def send_tg_notification(instance, created, **kwargs):
     if created:
-        text = f'Поступил новый заказ, на сумму {total_price}р., от пользователя {order.user.username}'
+        text = f'Поступил новый заказ, от пользователя {instance.user.username}'
         send_notification(text)
