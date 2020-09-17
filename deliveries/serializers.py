@@ -14,7 +14,7 @@ class ProductsInDeliveriesSerializer(serializers.ModelSerializer):
 
 class DeliveriesSerializer(WritableNestedModelSerializer):
     productsindeliveries_set = ProductsInDeliveriesSerializer(many=True)
-
+    status = serializers.CharField(source='get_status_display', read_only=True)
     # def create(self, validated_data):
     #     products_in_delivery = validated_data.pop('productsindeliveries_set')
     #     delivery = Deliveries.objects.create(**validated_data)
