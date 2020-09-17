@@ -22,7 +22,7 @@ ALLOWED_HOSTS = ['*']
 
 # Не знаю как динамически получать доменное имя на уровне модели
 # для вставки в QR код, Site настраивать не вижу необходимости
-URL = 'http://pavelm.pythonanywhere.com/'
+URL = 'http://127.0.0.1:8080/'
 
 # Application definition
 

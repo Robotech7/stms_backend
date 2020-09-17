@@ -56,7 +56,7 @@ class Orders(models.Model):
         return super().save()
 
     def qr_generate(self):
-        img = qrcode.make(''.join([settings.URL, 'api/orders/verify/', str(self.id)]))
+        img = qrcode.make(''.join([settings.URL, 'qrverify_order/', str(self.id)]))
         filename = f'qr-{self.id}.png'
         img.save(settings.MEDIA_ROOT + '/qr_codes/' + filename)
         img_path = '/qr_codes/' + filename
