@@ -21,12 +21,8 @@ class OrdersView(viewsets.ModelViewSet):
     search_fields = ['client_name', 'client_email', 'user__username']
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            queryset = Orders.objects.prefetch_related('productsinorder_set').all()
-            return queryset
-        else:
-            queryset = Orders.objects.prefetch_related('productsinorder_set').filter(user__id=self.request.user.id)
-            return queryset
+        queryset = Orders.objects.prefetch_related('productsinorder_set').filter(user__id=self.request.user.id)
+        return queryset
 
     def perform_destroy(self, instance):
         instance.delete()
